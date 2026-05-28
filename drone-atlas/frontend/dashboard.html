@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drone Atlas · Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="3" fill="#00D4FF"/>
+        <circle cx="4"  cy="4"  r="2.5" fill="#00D4FF" opacity=".7"/>
+        <circle cx="24" cy="4"  r="2.5" fill="#00D4FF" opacity=".7"/>
+        <circle cx="4"  cy="24" r="2.5" fill="#00D4FF" opacity=".7"/>
+        <circle cx="24" cy="24" r="2.5" fill="#00D4FF" opacity=".7"/>
+        <line x1="14" y1="11" x2="6"  y2="6"  stroke="#00D4FF" stroke-width="1.2" opacity=".5"/>
+        <line x1="14" y1="11" x2="22" y2="6"  stroke="#00D4FF" stroke-width="1.2" opacity=".5"/>
+        <line x1="14" y1="17" x2="6"  y2="22" stroke="#00D4FF" stroke-width="1.2" opacity=".5"/>
+        <line x1="14" y1="17" x2="22" y2="22" stroke="#00D4FF" stroke-width="1.2" opacity=".5"/>
+      </svg>
+      DRONE<span>ATLAS</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"     class="nav-link">Classify</a>
+      <a href="atlas.html"     class="nav-link">Atlas</a>
+      <a href="dashboard.html" class="nav-link active">Dashboard</a>
+    </div>
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      <span class="status-text">System Online</span>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="hero-tag">SCAN HISTORY · ANALYTICS</div>
+    <h1 class="page-title">Mission <em>Dashboard</em></h1>
+    <p class="page-sub">Live view of all classification scans stored in MongoDB. Filter by class, search by filename, or review confidence trends over time.</p>
+  </header>
+
+  <main class="dashboard-main">
+
+    <!-- ── KPI STRIP ── -->
+    <div class="kpi-strip" id="kpiStrip">
+      <div class="kpi"><span class="kpi-num" id="kpi-total">—</span><span class="kpi-label">Total Scans</span></div>
+      <div class="kpi"><span class="kpi-num" id="kpi-today">—</span><span class="kpi-label">Today</span></div>
+      <div class="kpi"><span class="kpi-num" id="kpi-avg-conf">—</span><span class="kpi-label">Avg Confidence</span></div>
+      <div class="kpi"><span class="kpi-num" id="kpi-top-class">—</span><span class="kpi-label">Top Class</span></div>
+    </div>
+
+    <!-- ── DISTRIBUTION CHART ── -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3 class="chart-title">Class Distribution</h3>
+        <span class="chart-sub">All-time scans by type</span>
+      </div>
+      <div class="bar-chart" id="barChart">
+        <!-- Filled by JS -->
+        <div class="chart-loading">Loading data…</div>
+      </div>
+    </div>
+
+    <!-- ── FILTER ROW ── -->
+    <div class="filter-row">
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5" stroke="#00D4FF" stroke-width="1.5"/>
+          <line x1="11" y1="11" x2="15" y2="15" stroke="#00D4FF" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input class="search-input" id="searchInput" type="text" placeholder="Search filename…" />
+      </div>
+      <select class="filter-select" id="classFilter">
+        <option value="">All Classes</option>
+        <option value="Hexacopter">Hexacopter</option>
+        <option value="Octacopter">Octacopter</option>
+        <option value="Quadcopter">Quadcopter</option>
+        <option value="Single_motor">Single Motor</option>
+        <option value="Tricopter">Tricopter</option>
+      </select>
+      <select class="filter-select" id="sortFilter">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="conf-desc">High Confidence</option>
+        <option value="conf-asc">Low Confidence</option>
+      </select>
+      <button class="action-btn" id="refreshBtn">↻ Refresh</button>
+    </div>
+
+    <!-- ── TABLE ── -->
+    <div class="table-wrap">
+      <table class="scan-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Filename</th>
+            <th>Predicted Class</th>
+            <th>Confidence</th>
+            <th>Scanned At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="scanTableBody">
+          <tr><td colspan="6" class="table-loading">Loading scans…</td></tr>
+        </tbody>
+      </table>
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- ── DETAIL MODAL ── -->
+    <div class="modal-overlay" id="modalOverlay" style="display:none">
+      <div class="modal">
+        <button class="modal-close" id="modalClose">✕</button>
+        <h3 class="modal-title">Scan Detail</h3>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span>DRONE CLASSIFY ATLAS</span>
+    <span class="footer-sep">·</span>
+    <span>MobileNetV2 · TensorFlow · MongoDB</span>
+    <span class="footer-sep">·</span>
+    <span id="footer-year"></span>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

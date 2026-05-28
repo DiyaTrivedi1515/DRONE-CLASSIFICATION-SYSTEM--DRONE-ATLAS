@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About · Drone Atlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cyan: #00D4FF;
+      --cyan-dim: rgba(0,212,255,.18);
+      --cyan-glow: rgba(0,212,255,.35);
+      --bg: #050a10;
+      --surface: rgba(255,255,255,.03);
+      --border: rgba(0,212,255,.18);
+      --text: #e8f4f8;
+      --muted: #6b8a99;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .bg-grid {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .bg-glow {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,212,255,.1) 0%, transparent 70%);
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; gap: 2rem;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(5,10,16,.85);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: .6rem;
+      font-family: 'Orbitron', monospace; font-size: .9rem; font-weight: 700;
+      color: var(--text); text-decoration: none; letter-spacing: .12em;
+    }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; gap: 1.5rem; margin-left: auto; }
+    .nav-link {
+      font-family: 'Share Tech Mono', monospace; font-size: .78rem;
+      color: var(--muted); text-decoration: none; letter-spacing: .08em;
+      text-transform: uppercase; transition: color .2s;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--cyan); }
+    .nav-status { display: flex; align-items: center; gap: .5rem; margin-left: 2rem; }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan); animation: pulse 2s infinite;
+    }
+    .status-text { font-family: 'Share Tech Mono', monospace; font-size: .72rem; color: var(--muted); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── HERO ── */
+    .about-hero {
+      position: relative; z-index: 1;
+      padding: 5rem 2.5rem 4rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .about-hero-tag {
+      font-family: 'Share Tech Mono', monospace; font-size: .72rem;
+      color: var(--cyan); letter-spacing: .2em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .about-hero-title {
+      font-family: 'Orbitron', monospace; font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 900; line-height: 1.1; letter-spacing: .04em;
+      max-width: 700px; margin: 0 auto .75rem;
+    }
+    .about-hero-title em { color: var(--cyan); font-style: normal; display: block; }
+    .about-hero-sub {
+      font-size: 1rem; color: var(--muted); max-width: 560px; margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── SECTIONS ── */
+    .content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; }
+
+    .section { padding: 5rem 0; border-bottom: 1px solid var(--border); }
+    .section:last-child { border-bottom: none; }
+
+    .section-tag {
+      font-family: 'Share Tech Mono', monospace; font-size: .68rem;
+      color: var(--cyan); letter-spacing: .2em; text-transform: uppercase;
+      margin-bottom: .6rem;
+    }
+    .section-title {
+      font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 700;
+      letter-spacing: .06em; margin-bottom: 1.25rem;
+    }
+    .section-title em { color: var(--cyan); font-style: normal; }
+    .section-body {
+      font-size: .95rem; color: var(--muted); line-height: 1.8; max-width: 680px;
+    }
+    .section-body p + p { margin-top: 1rem; }
+
+    /* ── TWO COL ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .two-col.reverse { direction: rtl; }
+    .two-col.reverse > * { direction: ltr; }
+
+    /* mission visual */
+    .mission-visual {
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 2rem; background: var(--surface);
+      position: relative; overflow: hidden;
+    }
+    .mission-visual::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(0,212,255,.08) 0%, transparent 65%);
+    }
+    .mv-label {
+      font-family: 'Share Tech Mono', monospace; font-size: .65rem;
+      color: var(--cyan); letter-spacing: .14em; margin-bottom: 1.25rem;
+      position: relative; z-index: 1;
+    }
+    .mv-chart { position: relative; z-index: 1; }
+    .mv-bar-row {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: .7rem;
+    }
+    .mv-bar-label { font-family: 'Share Tech Mono', monospace; font-size: .68rem; color: var(--muted); width: 90px; flex-shrink: 0; }
+    .mv-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; }
+    .mv-bar-fill { height: 100%; border-radius: 3px; background: var(--cyan); transition: width .6s ease; }
+    .mv-bar-val { font-family: 'Share Tech Mono', monospace; font-size: .68rem; color: var(--cyan); min-width: 36px; text-align: right; }
+
+    /* ── TECH STACK ── */
+    .tech-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+    .tech-card {
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 1.5rem 1.25rem; background: var(--surface);
+      position: relative; overflow: hidden;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .tech-card:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0,212,255,.08);
+    }
+    .tech-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0; transition: opacity .25s;
+    }
+    .tech-card:hover::before { opacity: 1; }
+    .tech-icon { font-size: 1.4rem; margin-bottom: .75rem; }
+    .tech-name { font-family: 'Orbitron', monospace; font-size: .78rem; font-weight: 600; color: var(--text); margin-bottom: .4rem; letter-spacing: .06em; }
+    .tech-desc { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── TEAM ── */
+    .team-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;
+      margin-top: 2.5rem; justify-items: center; max-width: 500px; margin-left: auto; margin-right: auto;
+    }
+    .team-card {
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 2rem 1.5rem; background: var(--surface); text-align: center;
+      transition: border-color .25s, transform .25s;
+    }
+    .team-card:hover { border-color: var(--cyan); transform: translateY(-3px); }
+    .team-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      border: 1.5px solid var(--cyan); margin: 0 auto 1rem;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,212,255,.06);
+      font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 700; color: var(--cyan);
+    }
+    .team-name { font-family: 'Orbitron', monospace; font-size: .82rem; font-weight: 600; color: var(--text); letter-spacing: .06em; margin-bottom: .3rem; }
+    .team-role { font-family: 'Share Tech Mono', monospace; font-size: .7rem; color: var(--cyan); letter-spacing: .1em; margin-bottom: .75rem; }
+    .team-bio { font-size: .8rem; color: var(--muted); line-height: 1.55; }
+    .team-bio a {
+      display: inline-flex; align-items: center; gap: .4rem;
+      color: var(--cyan); text-decoration: none; margin-top: .75rem;
+      font-family: 'Share Tech Mono', monospace; font-size: .75rem;
+      transition: color .25s;
+    }
+    .team-bio a:hover { color: var(--text); }
+    .team-bio a i { font-size: .85rem; }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border); border-radius: 4px;
+      overflow: hidden; margin-top: 2.5rem;
+    }
+    .stat-cell {
+      background: var(--bg); padding: 2rem 1.5rem; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Orbitron', monospace; font-size: 2rem; font-weight: 900;
+      color: var(--cyan); display: block; margin-bottom: .3rem;
+    }
+    .stat-lbl { font-family: 'Share Tech Mono', monospace; font-size: .7rem; color: var(--muted); letter-spacing: .1em; }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 5rem 2.5rem; text-align: center;
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+    }
+    .cta-title {
+      font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 700;
+      letter-spacing: .06em; margin-bottom: .75rem;
+    }
+    .cta-title em { color: var(--cyan); font-style: normal; }
+    .cta-sub { font-size: .95rem; color: var(--muted); margin-bottom: 2rem; }
+    .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .cta-btn {
+      padding: .85rem 2rem;
+      font-family: 'Orbitron', monospace; font-size: .78rem; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      text-decoration: none; border-radius: 3px;
+      transition: .25s;
+    }
+    .cta-btn.primary {
+      background: var(--cyan); color: #050a10;
+    }
+    .cta-btn.primary:hover { box-shadow: 0 0 24px var(--cyan-glow); }
+    .cta-btn.secondary {
+      border: 1.5px solid var(--border); color: var(--text);
+    }
+    .cta-btn.secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    footer {
+      position: relative; z-index: 1;
+      text-align: center; padding: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-family: 'Share Tech Mono', monospace; font-size: .7rem; color: var(--muted);
+      display: flex; justify-content: center; gap: .75rem;
+    }
+
+    @media (max-width: 720px) {
+      .two-col { grid-template-columns: 1fr; }
+      .two-col.reverse { direction: ltr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .nav-status { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="3" fill="#00D4FF"/>
+        <circle cx="4"  cy="4"  r="2.5" fill="#00D4FF" opacity=".7"/>
+        <circle cx="24" cy="4"  r="2.5" fill="#00D4FF" opacity=".7"/>
+        <circle cx="4"  cy="24" r="2.5" fill="#00D4FF" opacity=".7"/>
+        <circle cx="24" cy="24" r="2.5" fill="#00D4FF" opacity=".7"/>
+        <line x1="14" y1="11" x2="6"  y2="6"  stroke="#00D4FF" stroke-width="1.2" opacity=".5"/>
+        <line x1="14" y1="11" x2="22" y2="6"  stroke="#00D4FF" stroke-width="1.2" opacity=".5"/>
+        <line x1="14" y1="17" x2="6"  y2="22" stroke="#00D4FF" stroke-width="1.2" opacity=".5"/>
+        <line x1="14" y1="17" x2="22" y2="22" stroke="#00D4FF" stroke-width="1.2" opacity=".5"/>
+      </svg>
+      DRONE<span>ATLAS</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html"  class="nav-link">Classify</a>
+      <a href="atlas.html"  class="nav-link">Atlas</a>
+      <a href="about.html"  class="nav-link active">About</a>
+      <a href="login.html"  class="nav-link">Login</a>
+      <a href="signup.html" class="nav-link">Sign Up</a>
+    </div>
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      <span class="status-text">System Online</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="about-hero">
+    <div class="about-hero-tag">// WHO WE ARE · WHAT WE BUILT</div>
+    <h1 class="about-hero-title">
+      The Intelligence Behind<em>Drone Atlas</em>
+    </h1>
+    <p class="about-hero-sub">
+      A deep-learning platform built to identify, classify, and catalogue unmanned aerial vehicles — making UAV analysis accessible to operators, researchers, and security professionals worldwide.
+    </p>
+  </div>
+
+  <div class="content">
+
+    <!-- MISSION -->
+    <div class="section">
+      <div class="two-col">
+        <div>
+          <div class="section-tag">// 01 — MISSION</div>
+          <h2 class="section-title">Why We Built <em>This</em></h2>
+          <div class="section-body">
+            <p>The rapid proliferation of UAV technology has created an urgent need for fast, accurate drone identification. Whether for airspace management, security operations, or academic research — knowing what you're looking at matters.</p>
+            <p>Drone Atlas was built to democratize that capability. We fine-tuned MobileNetV2 on a curated dataset of 2,251 drone images across five distinct archetypes, achieving classification accuracy that rivals specialist hardware — delivered through a browser interface in seconds.</p>
+            <p>Our system is designed to evolve: every classified scan refines the model's understanding, and our Atlas database grows with every operator who joins the network.</p>
+          </div>
+        </div>
+        <div class="mission-visual">
+          <div class="mv-label">// CLASSIFICATION ACCURACY BY CLASS</div>
+          <div class="mv-chart" id="mvChart">
+            <div class="mv-bar-row">
+              <span class="mv-bar-label">Quadcopter</span>
+              <div class="mv-bar-track"><div class="mv-bar-fill" style="width:97%"></div></div>
+              <span class="mv-bar-val">97%</span>
+            </div>
+            <div class="mv-bar-row">
+              <span class="mv-bar-label">Hexacopter</span>
+              <div class="mv-bar-track"><div class="mv-bar-fill" style="width:94%"></div></div>
+              <span class="mv-bar-val">94%</span>
+            </div>
+            <div class="mv-bar-row">
+              <span class="mv-bar-label">Octacopter</span>
+              <div class="mv-bar-track"><div class="mv-bar-fill" style="width:91%"></div></div>
+              <span class="mv-bar-val">91%</span>
+            </div>
+            <div class="mv-bar-row">
+              <span class="mv-bar-label">Single Motor</span>
+              <div class="mv-bar-track"><div class="mv-bar-fill" style="width:89%"></div></div>
+              <span class="mv-bar-val">89%</span>
+            </div>
+            <div class="mv-bar-row">
+              <span class="mv-bar-label">Tricopter</span>
+              <div class="mv-bar-track"><div class="mv-bar-fill" style="width:88%"></div></div>
+              <span class="mv-bar-val">88%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="section">
+      <div class="section-tag">// 02 — BY THE NUMBERS</div>
+      <h2 class="section-title">Platform <em>Metrics</em></h2>
+      <div class="stats-row">
+        <div class="stat-cell">
+          <span class="stat-num">2,251</span>
+          <span class="stat-lbl">Training Images</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-num">5</span>
+          <span class="stat-lbl">Drone Classes</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-num">93.2%</span>
+          <span class="stat-lbl">Avg. Accuracy</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-num">&lt;1s</span>
+          <span class="stat-lbl">Inference Time</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TECH STACK -->
+    <div class="section">
+      <div class="section-tag">// 03 — TECHNOLOGY</div>
+      <h2 class="section-title">Built On <em>Solid Foundations</em></h2>
+      <p class="section-body">Every layer of Drone Atlas is chosen for performance, reliability, and extensibility. Here's the stack powering the platform:</p>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="tech-icon">🧠</div>
+          <div class="tech-name">MobileNetV2</div>
+          <div class="tech-desc">Lightweight convolutional architecture fine-tuned on our drone dataset for fast, accurate inference.</div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">⚡</div>
+          <div class="tech-name">TensorFlow</div>
+          <div class="tech-desc">Industry-standard ML framework powering model training, serving, and inference pipelines.</div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🗄️</div>
+          <div class="tech-name">MongoDB</div>
+          <div class="tech-desc">Flexible document database storing scan history, user profiles, and classification metadata.</div>
+        </div>
+        
+        <div class="tech-card">
+          <div class="tech-icon">🖥️</div>
+          <div class="tech-name"> Figma </div>
+          <div class="tech-desc">Design and prototyping tool used to craft the Atlas user interface, dashboard visualizations, and overall user experience.</div>
+        </div>
+        <div class="tech-card">
+          
+      </div>
+    </div>
+
+    <!-- TEAM -->
+    <div class="section">
+      <div class="section-tag">// 04 — THE TEAM</div>
+      <h2 class="section-title">Meet the <em>Operators</em></h2>
+      <p class="section-body">Drone Atlas is built by a focused team of machine learning engineers and full-stack developers united by a passion for computer vision and UAV technology.</p>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">VP</div>
+          <div class="team-name">Vishva Patel</div>
+          <div class="team-role">ML LEAD</div>
+          <div class="team-bio">Architected the MobileNetV2 training pipeline and dataset curation strategy. Oversaw model evaluation and optimization to achieve high classification accuracy across all drone classes.
+            <a href="https://www.linkedin.com/in/vishva-patel-a8117735a" target="_blank">Connect with US <i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">DT</div>
+          <div class="team-name">Diya Trivedi</div>
+          <div class="team-role">DATABASE ENGINEER</div>
+          <div class="team-bio">Designed the Flask, MongoDB schema, and real-time classification serving infrastructure.
+            <a href="https://www.linkedin.com/in/diya-trivedi-576344285?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank">Connect with US <i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <h2 class="cta-title">Ready to Start <em>Classifying?</em></h2>
+    <p class="cta-sub">Create a free operator account and run your first UAV scan in under 60 seconds.</p>
+    <div class="cta-btns">
+      <a href="signup.html" class="cta-btn primary">CREATE ACCOUNT</a>
+      <a href="index.html"  class="cta-btn secondary">TRY WITHOUT ACCOUNT</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>DRONE CLASSIFY ATLAS</span>
+    <span>·</span>
+    <span>MobileNetV2 · TensorFlow · MongoDB</span>
+    <span>·</span>
+    <span id="yr"></span>
+  </footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
