@@ -17,12 +17,6 @@ build/
 # Jupyter Notebooks checkpoints
 .ipynb_checkpoints/
 
-# Model files (too large for GitHub)
-*.keras
-*.h5
-*.pb
-models/
-drone_model_files/
 
 # Virtual environments
 venv/
